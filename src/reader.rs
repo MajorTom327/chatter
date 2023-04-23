@@ -23,7 +23,8 @@ pub fn get_directories(path: std::path::PathBuf) -> Vec<String> {
   directories
 }
 
-pub fn get_prompt(directory: &String) -> Result<Prompt, String> {
+pub fn get_prompt(directory: &String, prompt_modifier: &Option<String>) -> Result<Prompt, String> {
+
 
   let prompt = File::open(format!("{}/prompt.md", directory));
     let completion = File::open(format!("{}/completion.md", directory));
@@ -49,6 +50,16 @@ pub fn get_prompt(directory: &String) -> Result<Prompt, String> {
       Ok(content) => content,
       Err(e) => panic!("Error on read prompt: {:?}", e),
     };
+
+    // Use the formatter to replace the {} with the prompt string and have a common way to modify the prompt
+    let prompt_string = match prompt_modifier {
+      Some(modifier) => {
+        let temp_string = modifier.clone();
+        temp_string.replace("{}", &prompt_string).replace("\n", "")
+      },
+      None => prompt_string
+    };
+
 
     let mut completion_string = String::new();
     match completion.read_to_string(&mut completion_string) {
