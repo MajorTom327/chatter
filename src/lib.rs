@@ -4,7 +4,7 @@ mod reader;
 use std::io::Write;
 use std::fs::OpenOptions;
 
-pub fn run(path: std::path::PathBuf, output: std::path::PathBuf, prompt_modifier: Option<String>) {
+pub fn run(path: std::path::PathBuf, output: std::path::PathBuf, prompt_modifier: Option<String>, as_code: bool) {
   let directories = reader::get_directories(path);
 
 
@@ -19,10 +19,10 @@ pub fn run(path: std::path::PathBuf, output: std::path::PathBuf, prompt_modifier
   };
 
   for directory in &directories {
-    let prompt = reader::get_prompt(directory, &prompt_modifier).unwrap();
+    let prompt = reader::get_prompt(directory, &prompt_modifier, as_code).unwrap();
 
     let prompt_str = prompt.to_json();
-    let prompt_str = prompt_str + ",\n";
+    let prompt_str = prompt_str + "\n";
     let prompt_buffer: &[u8] = prompt_str.as_bytes();
 
     output.write(prompt_buffer).unwrap();

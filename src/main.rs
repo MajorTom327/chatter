@@ -10,7 +10,10 @@ pub struct Cli {
     output: std::path::PathBuf,
 
     #[clap(short('m'), long)]
-    prompt_modifier: Option<String>
+    prompt_modifier: Option<String>,
+
+    #[clap(short('c'), long)]
+    code: bool,
 }
 
 
@@ -21,5 +24,5 @@ fn main() {
   let output = args.output;
   let prompt_modifier = args.prompt_modifier;
 
-  run(path, output, prompt_modifier);
+  run(path, output, prompt_modifier, args.code);
 }

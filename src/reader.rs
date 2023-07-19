@@ -23,7 +23,7 @@ pub fn get_directories(path: std::path::PathBuf) -> Vec<String> {
   directories
 }
 
-pub fn get_prompt(directory: &String, prompt_modifier: &Option<String>) -> Result<Prompt, String> {
+pub fn get_prompt(directory: &String, prompt_modifier: &Option<String>, as_code: bool) -> Result<Prompt, String> {
 
 
   let prompt = File::open(format!("{}/prompt.md", directory));
@@ -50,6 +50,7 @@ pub fn get_prompt(directory: &String, prompt_modifier: &Option<String>) -> Resul
       Ok(content) => content,
       Err(e) => panic!("Error on read prompt: {:?}", e),
     };
+    let prompt_string = format!("{}\n\n###\n\n", prompt_string);
 
     // Use the formatter to replace the {} with the prompt string and have a common way to modify the prompt
     let prompt_string = match prompt_modifier {
@@ -66,6 +67,14 @@ pub fn get_prompt(directory: &String, prompt_modifier: &Option<String>) -> Resul
       Ok(content) => content,
       Err(e) => panic!("Error on read completion: {:?}", e),
     };
+
+    let suffix = ".";
+
+    if as_code {
+      completion_string = format!(" ```json\n{}\n```{}", completion_string, suffix);
+    } else {
+      completion_string = format!(" {}{}", completion_string, suffix);
+    }
 
     let prompt = Prompt::new(prompt_string, completion_string);
     println!("Generation of {} is done.", directory);
